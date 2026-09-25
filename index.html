@@ -1,0 +1,498 @@
+<title>Автоматизация бухгалтерии Ресан–Ревитех</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  --brand:#31797b;
+  --brand-ink:#1f5354;
+  --brand-soft:#e6f0f0;
+  --bg:#f5f7f7;
+  --surface:#ffffff;
+  --text:#1a2424;
+  --muted:#5a6a6a;
+  --line:#d8e2e2;
+  --ok:#2e7d4f; --ok-soft:#e5f2ea;
+  --warn:#a86a12; --warn-soft:#fbf0dc;
+  --crit:#b23a2a; --crit-soft:#f8e4e0;
+  --idle:#6b7878; --idle-soft:#eceff0;
+  --font:"Golos Text", "Segoe UI", Roboto, Arial, sans-serif;
+  --mono:"JetBrains Mono", Consolas, "Courier New", monospace;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --brand:#5fb0b2; --brand-ink:#9fd3d4; --brand-soft:#17302f;
+    --bg:#0e1515; --surface:#141f1f; --text:#e2ecec; --muted:#98a9a9; --line:#26393a;
+    --ok:#6cc08f; --ok-soft:#15291f; --warn:#e0a54a; --warn-soft:#2d2313;
+    --crit:#ea8574; --crit-soft:#321915; --idle:#9aa8a8; --idle-soft:#1d2828;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --brand:#5fb0b2; --brand-ink:#9fd3d4; --brand-soft:#17302f;
+  --bg:#0e1515; --surface:#141f1f; --text:#e2ecec; --muted:#98a9a9; --line:#26393a;
+  --ok:#6cc08f; --ok-soft:#15291f; --warn:#e0a54a; --warn-soft:#2d2313;
+  --crit:#ea8574; --crit-soft:#321915; --idle:#9aa8a8; --idle-soft:#1d2828;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:15px;line-height:1.55;margin:0}
+a{color:var(--brand)}
+.topbar{background:var(--brand);color:#fff}
+.topbar-in{max-width:1180px;margin:0 auto;padding-block:14px;padding-inline:16px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.mark{display:flex;align-items:center;gap:10px;font-weight:700;letter-spacing:.14em;font-size:14px}
+.mark i{width:14px;height:14px;border:3px solid #fff;display:inline-block}
+.topbar .meta{font-size:13px;opacity:.9;display:flex;gap:18px;flex-wrap:wrap}
+.wrap{max-width:1180px;margin:0 auto;padding-inline:16px;padding-block:28px 64px;display:grid;grid-template-columns:220px minmax(0,1fr);gap:40px}
+nav.toc{position:sticky;top:calc(env(safe-area-inset-top,0px) + 20px);align-self:start;font-size:14px}
+nav.toc p{font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin:0 0 10px}
+nav.toc ol{list-style:none;margin:0;padding:0;display:grid;gap:2px;border-left:2px solid var(--line)}
+nav.toc a{display:block;padding:5px 12px;color:var(--text);text-decoration:none;margin-left:-2px;border-left:2px solid transparent}
+nav.toc a:hover,nav.toc a:focus-visible{border-left-color:var(--brand);color:var(--brand);outline:none}
+main{min-width:0;display:grid;gap:44px}
+header.hero{display:grid;gap:14px;border-bottom:1px solid var(--line);padding-bottom:28px}
+.eyebrow{font-size:12px;text-transform:uppercase;letter-spacing:.12em;color:var(--brand);font-weight:600}
+h1{font-size:34px;line-height:1.15;margin:0;text-wrap:balance;font-weight:700;max-width:22ch}
+h2{font-size:22px;margin:0;text-wrap:balance;font-weight:700}
+h3{font-size:16px;margin:0;font-weight:600}
+.lead{font-size:17px;color:var(--muted);max-width:68ch;margin:0}
+.passport{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1px;background:var(--line);border:1px solid var(--line)}
+.passport div{background:var(--surface);padding:12px 14px}
+.passport dt{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+.passport dd{margin:4px 0 0;font-weight:600;font-size:14px}
+section{display:grid;gap:16px;scroll-margin-top:20px}
+.sec-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;flex-wrap:wrap;border-bottom:2px solid var(--brand);padding-bottom:8px}
+.sec-head .code{font-family:var(--mono);color:var(--brand);font-size:13px;margin-right:10px}
+.upd{font-size:12px;color:var(--muted);font-family:var(--mono);white-space:nowrap}
+p{margin:0;max-width:72ch}
+.panel{background:var(--surface);border:1px solid var(--line);padding:18px 20px}
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+ul.clean{margin:0;padding-left:18px;display:grid;gap:6px}
+.tbl{overflow-x:auto;border:1px solid var(--line);background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:14px;font-variant-numeric:tabular-nums}
+th{text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);font-weight:600;background:var(--brand-soft);padding:9px 12px;white-space:nowrap}
+td{padding:10px 12px;border-top:1px solid var(--line);vertical-align:top}
+td.id{font-family:var(--mono);color:var(--brand);white-space:nowrap}
+td.nw{white-space:nowrap}
+.pill{display:inline-block;font-size:12px;font-weight:600;padding:2px 8px;border-radius:2px;white-space:nowrap;border:1px solid transparent}
+.s-work{background:var(--brand-soft);color:var(--brand-ink);border-color:var(--brand)}
+.s-ok{background:var(--ok-soft);color:var(--ok)}
+.s-wait{background:var(--warn-soft);color:var(--warn)}
+.s-idle{background:var(--idle-soft);color:var(--idle)}
+.s-crit{background:var(--crit-soft);color:var(--crit)}
+.p-crit{color:var(--crit);font-weight:600}
+.p-high{color:var(--warn);font-weight:600}
+.p-mid{color:var(--muted);font-weight:600}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:13px;color:var(--muted);align-items:center}
+/* streams */
+.streams{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px}
+.stream{background:var(--surface);border:1px solid var(--line);padding:14px;display:grid;gap:8px;align-content:start}
+.stream.active{border:2px solid var(--brand);padding:13px}
+.stream .code{font-family:var(--mono);font-size:13px;color:var(--brand)}
+.stream h3{font-size:15px;line-height:1.3}
+.stream .pts{font-size:12px;color:var(--muted);font-family:var(--mono)}
+.bar{height:6px;background:var(--idle-soft)}
+.bar b{display:block;height:100%;background:var(--brand)}
+.stream .pct{font-size:12px;color:var(--muted)}
+/* gantt */
+.gantt{overflow-x:auto;border:1px solid var(--line);background:var(--surface)}
+.g-in{min-width:760px;position:relative;padding-bottom:8px}
+.g-row{display:grid;grid-template-columns:230px 1fr;align-items:center;min-height:34px;border-top:1px solid var(--line)}
+.g-row.g-head{border-top:0;min-height:30px;background:var(--brand-soft)}
+.g-row.g-group .g-label{font-weight:700;color:var(--brand-ink)}
+.g-label{padding:6px 12px;font-size:13px;line-height:1.3}
+.g-label .c{font-family:var(--mono);color:var(--brand);margin-right:6px;font-size:12px}
+.g-track{position:relative;height:100%;min-height:34px}
+.g-month{position:absolute;top:0;bottom:0;font-size:11px;color:var(--muted);padding:8px 6px;border-left:1px solid var(--line);text-transform:uppercase;letter-spacing:.06em;white-space:nowrap}
+.g-bar{position:absolute;top:9px;height:16px;background:var(--brand);opacity:.9}
+.g-bar.plan{background:transparent;border:1.5px dashed var(--brand);opacity:1}
+.g-bar.done{background:var(--ok)}
+.g-ms{position:absolute;top:10px;width:14px;height:14px;background:var(--crit);transform:translateX(-7px) rotate(45deg)}
+.g-grid{position:absolute;top:30px;bottom:0;left:230px;right:0;pointer-events:none}
+.g-grid span{position:absolute;top:0;bottom:0;border-left:1px dashed var(--line)}
+.g-today{position:absolute;top:0;bottom:0;border-left:2px solid var(--crit)}
+.g-today em{position:absolute;top:-1px;left:4px;font-style:normal;font-size:10px;font-weight:700;color:var(--crit);text-transform:uppercase;letter-spacing:.06em;background:var(--surface);padding:0 3px}
+/* flow */
+.flow{display:grid;grid-template-columns:1fr auto 1fr auto 1fr;gap:10px;align-items:stretch}
+.node{background:var(--surface);border:1px solid var(--line);padding:12px 14px;display:grid;gap:4px;align-content:start}
+.node b{font-size:14px}
+.node small{color:var(--muted);font-size:12px;line-height:1.4}
+.node.hub{border-color:var(--brand);background:var(--brand-soft)}
+.arrow{display:flex;align-items:center;color:var(--brand);font-weight:700;font-size:20px}
+.note{border-left:3px solid var(--warn);background:var(--warn-soft);padding:10px 14px;font-size:14px}
+.note.info{border-left-color:var(--brand);background:var(--brand-soft)}
+.fact{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;font-size:14px}
+.fact dt{font-family:var(--mono);color:var(--brand);font-size:12px;padding-top:2px}
+.fact dd{margin:0}
+code{font-family:var(--mono);font-size:.9em;background:var(--brand-soft);padding:1px 4px}
+footer{font-size:12px;color:var(--muted);border-top:1px solid var(--line);padding-top:14px}
+@media (max-width:980px){
+  .wrap{grid-template-columns:1fr;gap:24px}
+  nav.toc{position:static}
+  nav.toc ol{grid-template-columns:repeat(2,minmax(0,1fr));border-left:0}
+  .streams{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .passport{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media (max-width:640px){
+  h1{font-size:26px}
+  .grid2,.streams{grid-template-columns:1fr}
+  .flow{grid-template-columns:1fr}
+  .arrow{justify-content:center;transform:rotate(90deg)}
+}
+@media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+html{scroll-behavior:smooth}
+</style>
+
+<div class="topbar">
+  <div class="topbar-in">
+    <div class="mark"><i></i>РЕВИТЕХ · ПРОЕКТНЫЙ ОФИС</div>
+    <div class="meta">
+      <span>Версия <b id="docVer">0.2</b></span>
+      <span>Обновлено <b id="docUpd">25.09.2026</b></span>
+      <span>Статус: <b>Обследование</b></span>
+    </div>
+  </div>
+</div>
+
+<div class="wrap">
+  <nav class="toc" aria-label="Содержание">
+    <p>Содержание</p>
+    <ol>
+      <li><a href="#passport">Паспорт проекта</a></li>
+      <li><a href="#streams">Направления</a></li>
+      <li><a href="#roadmap">Дорожная карта</a></li>
+      <li><a href="#registry">Реестр проблем</a></li>
+      <li><a href="#n1">Н1. Обмен УТ → БП</a></li>
+      <li><a href="#questions">Открытые вопросы</a></li>
+      <li><a href="#decisions">Журнал решений</a></li>
+      <li><a href="#risks">Риски</a></li>
+      <li><a href="#landscape">ИТ-ландшафт</a></li>
+      <li><a href="#changelog">Журнал изменений</a></li>
+    </ol>
+  </nav>
+
+  <main>
+    <header class="hero" id="passport">
+      <div class="eyebrow">Проект автоматизации · ООО «Ресан» / ООО «Ревитех»</div>
+      <h1>Автоматизация бухгалтерского учёта в 1С</h1>
+      <p class="lead">Проект убирает ручные операции бухгалтерии, устраняет нарушения в первичных документах и приводит обмен между торговой и бухгалтерской базами к автоматическому и контролируемому процессу. Работа идёт по одному направлению за раз: обследование, план, внедрение, затем следующее направление.</p>
+      <dl class="passport">
+        <div><dt>Инвестор</dt><dd>ООО «Ревитех»</dd></div>
+        <div><dt>Ключевой пользователь</dt><dd>Главный бухгалтер</dd></div>
+        <div><dt>Период</dt><dd>09.2026 – 05.2027</dd></div>
+        <div><dt>Текущее направление</dt><dd>Н1. Обмен УТ → БП</dd></div>
+        <div><dt>Руководитель проекта</dt><dd>уточняется</dd></div>
+        <div><dt>Администратор 1С</dt><dd>уточняется</dd></div>
+        <div><dt>Разработчик обмена</dt><dd>Иннотех (подрядчик)</dd></div>
+        <div><dt>Следующая веха</dt><dd>16.10 — анализ правил</dd></div>
+      </dl>
+      <div class="grid2">
+        <div class="panel">
+          <h3>Цели</h3>
+          <ul class="clean" style="margin-top:8px">
+            <li>Данные попадают в бухгалтерскую базу автоматически, без ручной выгрузки и двойного ввода.</li>
+            <li>Первичные документы соответствуют законодательству: счета-фактуры на аванс, адреса обособленных подразделений.</li>
+            <li>Банковские выписки и платёжные поручения обрабатываются без ручного переноса данных.</li>
+            <li>Закрытый период защищён от изменений, отчёты (акт сверки, ОСВ) сходятся с учётом.</li>
+          </ul>
+        </div>
+        <div class="panel">
+          <h3>Границы и ограничения</h3>
+          <ul class="clean" style="margin-top:8px">
+            <li>Основная база остаётся на УТ 10.3, переход на УТ 11 не рассматривается.</li>
+            <li>УТ 10.3 снята с поддержки 1С (с апреля 2024): изменения законодательства вносятся силами проекта.</li>
+            <li>Любые изменения обмена сначала проверяются на копиях баз.</li>
+            <li>Сроки ориентировочные, уточняются по итогам обследования каждого направления.</li>
+          </ul>
+        </div>
+      </div>
+    </header>
+
+    <section id="streams">
+      <div class="sec-head"><h2>Направления работ</h2><span class="upd">обновлено 25.09.2026</span></div>
+      <p>Двенадцать проблем, выявленных вместе с главным бухгалтером, сгруппированы в пять направлений. Процент отражает долю пройденных этапов направления.</p>
+      <div class="streams">
+        <div class="stream active">
+          <span class="code">Н1</span>
+          <h3>Обмен УТ → бухгалтерия и права</h3>
+          <span class="pts">п. 1, 3, 4, 10</span>
+          <span class="pill s-work">В работе</span>
+          <div class="bar"><b style="width:15%"></b></div>
+          <span class="pct">15% · обследование</span>
+        </div>
+        <div class="stream">
+          <span class="code">Н2</span>
+          <h3>Первичные документы и НДС</h3>
+          <span class="pts">п. 2, 12</span>
+          <span class="pill s-idle">Не начато</span>
+          <div class="bar"><b style="width:0%"></b></div>
+          <span class="pct">0%</span>
+        </div>
+        <div class="stream">
+          <span class="code">Н3</span>
+          <h3>Сверка ОСВ Ресан / Ревитех</h3>
+          <span class="pts">п. 11</span>
+          <span class="pill s-idle">Не начато</span>
+          <div class="bar"><b style="width:0%"></b></div>
+          <span class="pct">0%</span>
+        </div>
+        <div class="stream">
+          <span class="code">Н4</span>
+          <h3>Банк и платежи</h3>
+          <span class="pts">п. 5, 6, 7</span>
+          <span class="pill s-idle">Не начато</span>
+          <div class="bar"><b style="width:0%"></b></div>
+          <span class="pct">0%</span>
+        </div>
+        <div class="stream">
+          <span class="code">Н5</span>
+          <h3>Контроль учёта: закрытие периода, акт сверки</h3>
+          <span class="pts">п. 8, 9</span>
+          <span class="pill s-idle">Не начато</span>
+          <div class="bar"><b style="width:0%"></b></div>
+          <span class="pct">0%</span>
+        </div>
+      </div>
+      <div class="note">Порядок Н2–Н5 предварительный. Н2 несёт юридический риск, а п. 9 и п. 11 главный бухгалтер отметил как срочные. Очерёдность нужно согласовать с главным бухгалтером до завершения Н1.</div>
+    </section>
+
+    <section id="roadmap">
+      <div class="sec-head"><h2>Дорожная карта</h2><span class="upd">обновлено 25.09.2026</span></div>
+      <div class="legend">
+        <span><span class="pill s-work">━</span> этап с детальным планом</span>
+        <span><span class="pill" style="border:1.5px dashed var(--brand);color:var(--brand)">┅</span> ориентировочно</span>
+        <span><span class="pill s-crit">◆</span> веха</span>
+        <span><span class="pill s-crit">|</span> сегодня</span>
+      </div>
+      <div class="gantt"><div class="g-in" id="gantt"></div></div>
+    </section>
+
+    <section id="registry">
+      <div class="sec-head"><h2>Реестр проблем</h2><span class="upd">обновлено 25.09.2026</span></div>
+      <div class="tbl">
+        <table>
+          <thead><tr><th>№</th><th>Проблема</th><th>Напр.</th><th>Приоритет</th><th>Статус</th><th>Рабочая гипотеза</th></tr></thead>
+          <tbody>
+            <tr><td class="id">П-01</td><td>Выгрузка в бухгалтерскую базу выполняется 2 раза в месяц</td><td class="id">Н1</td><td class="p-high">Высокий</td><td><span class="pill s-work">Анализ</span></td><td>Выгрузка ручная: внешняя обработка, бухгалтер сам выбирает период и правила. Нужен запуск по расписанию с фиксированным набором правил</td></tr>
+            <tr><td class="id">П-02</td><td>Не формируются счета-фактуры на аванс; в УПД не указывается ранее полученная оплата</td><td class="id">Н2</td><td class="p-crit">Критический</td><td><span class="pill s-idle">Не начато</span></td><td>Нарушение ст. 168 НК РФ: счёт-фактура на аванс выставляется в течение 5 календарных дней. Не заполняется строка 5 УПД</td></tr>
+            <tr><td class="id">П-03</td><td>Двойной ввод поступлений канцтоваров по УПД (в УТ и в БП)</td><td class="id">Н1</td><td class="p-high">Высокий</td><td><span class="pill s-work">Анализ</span></td><td>Следствие П-04</td></tr>
+            <tr><td class="id">П-04</td><td>Объекты, созданные бухгалтерией в УТ, не попадают в бухгалтерскую базу</td><td class="id">Н1</td><td class="p-high">Высокий</td><td><span class="pill s-work">Анализ</span></td><td>Карточки номенклатуры уходят в БП только вместе с выгружаемым документом, который на них ссылается. Проверить, где оформляется поступление канцтоваров по УПД, и нет ли условия отбора в правилах</td></tr>
+            <tr><td class="id">П-05</td><td>Выписки из банк-клиента выгружаются и загружаются вручную</td><td class="id">Н4</td><td class="p-mid">Средний</td><td><span class="pill s-idle">Не начато</span></td><td>Сбербанк и Т-Банк поддерживают прямой обмен с 1С (ДиректБанк)</td></tr>
+            <tr><td class="id">П-06</td><td>Платёжные поручения по заявкам создаются вручную</td><td class="id">Н4</td><td class="p-mid">Средний</td><td><span class="pill s-idle">Не начато</span></td><td>Создание на основании проведённой заявки</td></tr>
+            <tr><td class="id">П-07</td><td>При загрузке выписок не заполняются Сумма НДС и Ставка НДС</td><td class="id">Н4</td><td class="p-mid">Средний</td><td><span class="pill s-idle">Не начато</span></td><td>УТ 10.3 без поддержки не знает ставку 22%; разбор назначения платежа не срабатывает</td></tr>
+            <tr><td class="id">П-08</td><td>Нет закрытия периода и запрета редактирования объектов</td><td class="id">Н5</td><td class="p-high">Высокий</td><td><span class="pill s-idle">Не начато</span></td><td>В БП 3.0 есть штатные даты запрета изменения; в УТ нужен отдельный механизм и ограничение прав</td></tr>
+            <tr><td class="id">П-09</td><td>Акт сверки завышает суммы (пример: аренда 3 × 25 тыс. отражается как 75 тыс. ежемесячно)</td><td class="id">Н5</td><td class="p-high">Высокий · срочно</td><td><span class="pill s-idle">Не начато</span></td><td>Сверить с ОСВ по 60/76: ошибка в документах (в т. ч. дубли от обмена) или в отчёте</td></tr>
+            <tr><td class="id">П-10</td><td>Бухгалтеры могут снимать ограничения выгрузки, возникают дубли</td><td class="id">Н1</td><td class="p-high">Высокий</td><td><span class="pill s-work">Анализ</span></td><td>Бухгалтер при каждой выгрузке выбирает правила и период: неполные наборы и перекрытие периодов дают пропуски и дубли. Зафиксировать набор правил, убрать ручной выбор</td></tr>
+            <tr><td class="id">П-11</td><td>Ручная построчная сверка ОСВ Ресан и Ревитех</td><td class="id">Н3</td><td class="p-high">Высокий · срочно</td><td><span class="pill s-idle">Не начато</span></td><td>Автоматическое сопоставление двух ОСВ с выводом только расхождений</td></tr>
+            <tr><td class="id">П-12</td><td>В печатных формах и Диадоке адрес грузоотправителя берётся из Перми, а не из обособленного подразделения</td><td class="id">Н2</td><td class="p-crit">Критический</td><td><span class="pill s-idle">Не начато</span></td><td>Не заданы ОП (адрес, КПП) у региональных складов или печатная форма их не использует</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="n1">
+      <div class="sec-head"><h2><span class="code">Н1</span>Обмен УТ → бухгалтерия и права доступа</h2><span class="upd">обновлено 25.09.2026</span></div>
+
+      <div class="grid2">
+        <div class="panel">
+          <h3>Установлено на обследовании</h3>
+          <dl class="fact" style="margin-top:10px">
+            <dt>25.09</dt><dd>Выгрузка идёт внешней обработкой «Выгрузка данных в Монтаж» (версия от 07.09.2026). Файл лежит на сервере компании, в УТ подключён ссылкой. Название «Монтаж» историческое.</dd>
+            <dt>25.09</dt><dd>Обработку и правила сопровождает подрядчик Иннотех. Правила написаны под компанию: 12 правил по документам, из справочников отдельно только «Склады».</dd>
+            <dt>25.09</dt><dd>При каждой выгрузке бухгалтер вручную выбирает период и нужные правила. Отборы: организация, подразделение, склад.</dd>
+            <dt>25.09</dt><dd>Номенклатура и другие справочники попадают в БП только по ссылкам из выгружаемых документов.</dd>
+            <dt>25.09</dt><dd>В правилах нет платёжных поручений, перемещений, списаний, возвратов поставщику, корректировок долга.</dd>
+            <dt>25.09</dt><dd>Прежняя обработка «Выгрузка данных в конфигурацию "Бухгалтерия предприятия", ред. 1.6» устарела и не используется.</dd>
+            <dt>25.09</dt><dd>Планы обмена с бухгалтерией в УТ есть, включая доработанные «…фоновый», но узлов в них нет: они не используются.</dd>
+            <dt>25.09</dt><dd>Бухгалтерская база БП 3.0.194.18 штатно поддерживает синхронизацию с УТ 10.3.</dd>
+            <dt>25.09</dt><dd>УТ 10.3 снята с поддержки 1С; ставки НДС 22% в типовых правилах обмена нет.</dd>
+          </dl>
+        </div>
+        <div class="panel">
+          <h3>Выбор пути</h3>
+          <div class="tbl" style="margin-top:10px">
+            <table>
+              <thead><tr><th>Вариант</th><th>Оценка</th></tr></thead>
+              <tbody>
+                <tr><td><b>А.</b> Доработка текущей схемы: правила, права, расписание, контроль</td><td><span class="pill s-wait">Рекомендован</span></td></tr>
+                <tr><td><b>Б.</b> Обновление УТ до последнего релиза 10.3 и типовая синхронизация</td><td><span class="pill s-idle">Не приоритетно</span></td></tr>
+                <tr><td><b>В.</b> Переход на УТ 11</td><td><span class="pill s-crit">Исключён</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p style="margin-top:10px;font-size:14px;color:var(--muted)">Вариант Б требует обновить снятую с поддержки доработанную конфигурацию, а правила под 22% всё равно придётся дописывать вручную.</p>
+        </div>
+      </div>
+
+      <h3>Целевая схема (вариант А)</h3>
+      <div class="flow" role="img" aria-label="Схема: УТ выгружает файл по расписанию в сетевую папку, БП загружает его по расписанию, результат пишется в журнал с уведомлением ответственному">
+        <div class="node"><b>УТ 10.3</b><small>Регламентное задание ночью выгружает данные по фиксированному набору правил. Для запуска внешней обработки по расписанию нужна доработка конфигурации. У бухгалтеров нет доступа к выбору правил.</small></div>
+        <div class="arrow">→</div>
+        <div class="node hub"><b>Сетевая папка обмена</b><small>Файл выгрузки. Одна версия правил хранится под контролем администратора 1С.</small></div>
+        <div class="arrow">→</div>
+        <div class="node"><b>БП 3.0 «Бух. Ресан»</b><small>Регламентное задание загружает файл. Журнал обмена и уведомление ответственному об ошибках.</small></div>
+      </div>
+      <p style="font-size:14px;color:var(--muted)">Следующий шаг развития: перевести выгрузку за период на регистрацию изменений через собственный план обмена с теми же правилами. Это уберёт повторную выгрузку и основной источник дублей.</p>
+
+      <h3>План этапов</h3>
+      <div class="tbl">
+        <table>
+          <thead><tr><th>Этап</th><th>Содержание</th><th>Сроки</th><th>Результат</th><th>Статус</th></tr></thead>
+          <tbody>
+            <tr><td class="id">1.1</td><td>Обследование текущей схемы выгрузки и загрузки</td><td class="nw">22.09 – 03.10</td><td>Описание текущего процесса</td><td><span class="pill s-work">В работе</span></td></tr>
+            <tr><td class="id">1.2</td><td>Анализ файла правил от Иннотеха: почему не проходят карточки канцтоваров, как обрабатывается НДС, каких документов не хватает</td><td class="nw">06.10 – 16.10</td><td>Перечень исправлений правил</td><td><span class="pill s-idle">Запланировано</span></td></tr>
+            <tr><td class="id">1.3</td><td>Согласование целевой схемы с главным бухгалтером, администратором 1С и Иннотехом; решение, кто вносит изменения в правила</td><td class="nw">19.10 – 23.10</td><td>Утверждённая схема и расписание</td><td><span class="pill s-idle">Запланировано</span></td></tr>
+            <tr><td class="id">1.4</td><td>Доработка правил: ставка 22%, канцтовары, полный перечень документов, отборы. Исполнитель по решению этапа 1.3</td><td class="nw">26.10 – 06.11</td><td>Правила обмена v1</td><td><span class="pill s-idle">Запланировано</span></td></tr>
+            <tr><td class="id">1.5</td><td>Тестирование на копиях обеих баз: полнота, дубли, сопоставление справочников</td><td class="nw">09.11 – 20.11</td><td>Протокол тестирования</td><td><span class="pill s-idle">Запланировано</span></td></tr>
+            <tr><td class="id">1.6</td><td>Права доступа, регламентное задание запуска выгрузки (доработка конфигурации), журнал и уведомления</td><td class="nw">23.11 – 27.11</td><td>Настроенный контур</td><td><span class="pill s-idle">Запланировано</span></td></tr>
+            <tr><td class="id">1.7</td><td>Пилот: автоматический обмен параллельно с контролем бухгалтерии</td><td class="nw">30.11 – 11.12</td><td>Акт пилотной эксплуатации</td><td><span class="pill s-idle">Запланировано</span></td></tr>
+            <tr><td class="id">1.8</td><td>Ввод в эксплуатацию, отключение ручной выгрузки у бухгалтеров</td><td class="nw">14.12</td><td>Веха: обмен работает автоматически</td><td><span class="pill s-idle">Запланировано</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="questions">
+      <div class="sec-head"><h2>Открытые вопросы</h2><span class="upd">обновлено 25.09.2026</span></div>
+      <div class="tbl">
+        <table>
+          <thead><tr><th>№</th><th>Вопрос</th><th>Напр.</th><th>Кто отвечает</th><th>Статус</th></tr></thead>
+          <tbody>
+            <tr><td class="id">В-01</td><td>Какой обработкой и с каким файлом правил бухгалтер загружает данные в БП 3.0</td><td class="id">Н1</td><td>Бухгалтерия</td><td><span class="pill s-wait">Ожидает ответа</span></td></tr>
+            <tr><td class="id">В-02</td><td>Содержимое вкладки «Правила выгрузки данных» в обработке УТ</td><td class="id">Н1</td><td>Проект</td><td><span class="pill s-ok">Отвечено 25.09</span></td></tr>
+            <tr><td class="id">В-03</td><td>Как бухгалтер заполняет форму выгрузки: период, организация, отборы</td><td class="id">Н1</td><td>Бухгалтерия</td><td><span class="pill s-ok">Отвечено 25.09</span></td></tr>
+            <tr><td class="id">В-04</td><td>Получить у Иннотеха файл правил обмена и файл обработки (.epf)</td><td class="id">Н1</td><td>Иннотех</td><td><span class="pill s-wait">Ожидает ответа</span></td></tr>
+            <tr><td class="id">В-05</td><td>Снята ли конфигурация УТ с поддержки полностью или частично (Конфигуратор → Поддержка)</td><td class="id">Н1</td><td>Администратор 1С</td><td><span class="pill s-wait">Ожидает ответа</span></td></tr>
+            <tr><td class="id">В-06</td><td>Есть ли отдельная бухгалтерская база Ревитеха; выгружаются ли обе организации из одной УТ</td><td class="id">Н1</td><td>Бухгалтерия</td><td><span class="pill s-wait">Ожидает ответа</span></td></tr>
+            <tr><td class="id">В-07</td><td>Пример поступления канцтоваров, которое не дошло до БП</td><td class="id">Н1</td><td>Бухгалтерия</td><td><span class="pill s-wait">Ожидает ответа</span></td></tr>
+            <tr><td class="id">В-08</td><td>Очерёдность направлений Н2–Н5</td><td>Все</td><td>Главный бухгалтер</td><td><span class="pill s-wait">Ожидает ответа</span></td></tr>
+            <tr><td class="id">В-09</td><td>Где проводится поступление канцтоваров по УПД: в УТ, в БП или в обеих базах</td><td class="id">Н1</td><td>Бухгалтерия</td><td><span class="pill s-wait">Ожидает ответа</span></td></tr>
+            <tr><td class="id">В-10</td><td>Полный перечень документов, которые должны попадать в БП: нужны ли перемещения, списания, возвраты поставщику, корректировки долга</td><td class="id">Н1</td><td>Главный бухгалтер</td><td><span class="pill s-wait">Ожидает ответа</span></td></tr>
+            <tr><td class="id">В-11</td><td>Кто вносит изменения в правила и обработку: Иннотех или проект; порядок и сроки</td><td class="id">Н1</td><td>Руководство, Иннотех</td><td><span class="pill s-wait">Ожидает ответа</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="decisions">
+      <div class="sec-head"><h2>Журнал решений</h2><span class="upd">обновлено 25.09.2026</span></div>
+      <div class="tbl">
+        <table>
+          <thead><tr><th>№</th><th>Дата</th><th>Решение</th><th>Кем принято</th><th>Статус</th></tr></thead>
+          <tbody>
+            <tr><td class="id">Р-01</td><td class="nw">23.09.2026</td><td>Работа ведётся по одному направлению до готового плана, затем переход к следующему</td><td>Руководитель проекта</td><td><span class="pill s-ok">Принято</span></td></tr>
+            <tr><td class="id">Р-02</td><td class="nw">25.09.2026</td><td>Первое направление: обмен УТ → бухгалтерия (Н1)</td><td>Руководитель проекта</td><td><span class="pill s-ok">Принято</span></td></tr>
+            <tr><td class="id">Р-03</td><td class="nw">25.09.2026</td><td>Переход на УТ 11 не рассматривается; решения строятся под связку УТ 10.3 + БП 3.0</td><td>Руководство</td><td><span class="pill s-ok">Принято</span></td></tr>
+            <tr><td class="id">Р-04</td><td class="nw">25.09.2026</td><td>Базовый путь для Н1: доработка текущей схемы (вариант А)</td><td>—</td><td><span class="pill s-wait">Предложено</span></td></tr>
+            <tr><td class="id">Р-05</td><td class="nw">25.09.2026</td><td>Анализ ведётся по актуальной обработке «Выгрузка данных в Монтаж» (вер. 07.09.2026); прежняя обработка «…ред. 1.6» исключена из анализа</td><td>Руководитель проекта</td><td><span class="pill s-ok">Принято</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="risks">
+      <div class="sec-head"><h2>Риски</h2><span class="upd">обновлено 25.09.2026</span></div>
+      <div class="tbl">
+        <table>
+          <thead><tr><th>№</th><th>Риск</th><th>Уровень</th><th>Мера</th></tr></thead>
+          <tbody>
+            <tr><td class="id">Р-К1</td><td>Дубли справочников и документов при первом автоматическом обмене</td><td class="p-crit">Высокий</td><td>Тест на копиях баз, проверка сопоставления до запуска</td></tr>
+            <tr><td class="id">Р-К2</td><td>Изменения обмена совпадут с годовым закрытием</td><td class="p-crit">Высокий</td><td>Запуск до 14.12; при сдвиге сроков перенос на вторую половину января</td></tr>
+            <tr><td class="id">Р-К3</td><td>УТ 10.3 без поддержки: изменения законодательства (НДС и др.) не придут с обновлениями</td><td class="p-high">Средний</td><td>Закладывать ресурс на самостоятельные доработки правил и форм</td></tr>
+            <tr><td class="id">Р-К4</td><td>Логика правил известна только подрядчику и не задокументирована</td><td class="p-high">Средний</td><td>Описать правила на этапе 1.2 и хранить описание вместе с файлом</td></tr>
+            <tr><td class="id">Р-К5</td><td>Служба сервера 1С не имеет доступа к сетевой папке обмена</td><td class="p-mid">Низкий</td><td>Проверить права учётной записи службы до этапа 1.6</td></tr>
+            <tr><td class="id">Р-К6</td><td>Обмен нагружает рабочую базу в рабочее время (09:00–19:00)</td><td class="p-mid">Низкий</td><td>Запускать выгрузку ночью, согласовать с расписанием регламентных заданий</td></tr>
+            <tr><td class="id">Р-К7</td><td>Зависимость от подрядчика: любые изменения обмена требуют участия Иннотеха</td><td class="p-high">Средний</td><td>Согласовать порядок работ и передачу исходников на этапе 1.3</td></tr>
+            <tr><td class="id">Р-К8</td><td>Версия внешней обработки на сервере может меняться без ведома пользователей и проекта</td><td class="p-high">Средний</td><td>Фиксировать действующую версию в документе; изменения только по согласованию</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="landscape">
+      <div class="sec-head"><h2>ИТ-ландшафт</h2><span class="upd">обновлено 25.09.2026</span></div>
+      <div class="tbl">
+        <table>
+          <thead><tr><th>Система</th><th>Конфигурация</th><th>Платформа</th><th>Примечание</th></tr></thead>
+          <tbody>
+            <tr><td><b>Основная база</b></td><td>Управление торговлей 10.3.7.8 (обычные формы)</td><td class="nw">8.3.22.2208</td><td>Работают все подразделения. Снята с поддержки 1С с апреля 2024</td></tr>
+            <tr><td><b>Бух. Ресан</b> <code>buh_resan</code></td><td>Бухгалтерия предприятия 3.0.194.18</td><td class="nw">8.3.27.1936</td><td>Серверный режим, сервер <code>r2d2</code>, есть расширения</td></tr>
+            <tr><td><b>Обработка выгрузки</b></td><td>Внешняя «Выгрузка данных в Монтаж», вер. от 07.09.2026</td><td>—</td><td>Сопровождает Иннотех; файл на сервере компании, в УТ подключён ссылкой</td></tr>
+            <tr><td><b>Бух. Ревитех</b></td><td>уточняется</td><td>—</td><td>См. В-06</td></tr>
+            <tr><td><b>ЗУП</b></td><td>Зарплата и управление персоналом 3</td><td>—</td><td>Обмен с БП через сетевой каталог <code>\\r2d2\ресан</code></td></tr>
+            <tr><td><b>ЭДО</b></td><td>Диадок</td><td>—</td><td>Затрагивается в Н2 (П-12)</td></tr>
+            <tr><td><b>Банки</b></td><td>Сбербанк, Т-Банк (основные), прочие</td><td>—</td><td>Затрагиваются в Н4</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="changelog">
+      <div class="sec-head"><h2>Журнал изменений документа</h2><span class="upd">обновлено 25.09.2026</span></div>
+      <p style="font-size:14px;color:var(--muted)">Каждое обновление повышает версию документа и отмечается здесь. У каждого раздела указана дата его последнего изменения.</p>
+      <div class="tbl">
+        <table>
+          <thead><tr><th>Версия</th><th>Дата</th><th>Что изменилось</th></tr></thead>
+          <tbody>
+            <tr><td class="id">0.2</td><td class="nw">25.09.2026</td><td>Текущая схема обмена описана по актуальной обработке «Выгрузка данных в Монтаж» (вер. 07.09.2026) вместо устаревшей. В роли проекта добавлен Иннотех. Уточнены гипотезы П-01, П-04, П-10. Вопросы В-02, В-03 закрыты, добавлены В-09 – В-11, В-04 переадресован Иннотеху. Добавлены решение Р-05 и риски Р-К7, Р-К8. Этапы 1.2–1.6 уточнены с учётом подрядчика</td></tr>
+            <tr><td class="id">0.1</td><td class="nw">25.09.2026</td><td>Документ создан: паспорт проекта, пять направлений, дорожная карта, реестр 12 проблем, результаты обследования и план этапов Н1, открытые вопросы, журнал решений, риски, ИТ-ландшафт</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <footer>Внутренний документ проекта. Сроки ориентировочные и уточняются по итогам обследования каждого направления.</footer>
+    </section>
+  </main>
+</div>
+
+<script>
+(function(){
+  var start = new Date(2026,8,21), end = new Date(2027,5,1), today = new Date(2026,8,25);
+  var span = end - start;
+  function pct(d){ return ((d - start) / span * 100).toFixed(2) + '%'; }
+  function D(s){ var p = s.split('.'); return new Date(+p[2], +p[1]-1, +p[0]); }
+  var rows = [
+    {g:'Н1', t:'Обмен УТ → бухгалтерия', s:'22.09.2026', e:'14.12.2026', kind:'group'},
+    {c:'1.1', t:'Обследование', s:'22.09.2026', e:'03.10.2026'},
+    {c:'1.2', t:'Анализ правил', s:'06.10.2026', e:'16.10.2026'},
+    {c:'1.3', t:'Согласование схемы', s:'19.10.2026', e:'23.10.2026'},
+    {c:'1.4', t:'Доработка правил', s:'26.10.2026', e:'06.11.2026'},
+    {c:'1.5', t:'Тест на копиях', s:'09.11.2026', e:'20.11.2026'},
+    {c:'1.6', t:'Права и расписание', s:'23.11.2026', e:'27.11.2026'},
+    {c:'1.7', t:'Пилот', s:'30.11.2026', e:'11.12.2026'},
+    {c:'1.8', t:'Ввод в эксплуатацию', ms:'14.12.2026'},
+    {g:'Н2', t:'Первичные документы и НДС', s:'14.12.2026', e:'05.02.2027', plan:true, kind:'group'},
+    {g:'Н3', t:'Сверка ОСВ Ресан / Ревитех', s:'08.02.2027', e:'26.02.2027', plan:true, kind:'group'},
+    {g:'Н4', t:'Банк и платежи', s:'01.03.2027', e:'09.04.2027', plan:true, kind:'group'},
+    {g:'Н5', t:'Закрытие периода, акт сверки', s:'12.04.2027', e:'28.05.2027', plan:true, kind:'group'}
+  ];
+  var months = ['сен','окт','ноя','дек','янв','фев','мар','апр','май'];
+  var el = document.getElementById('gantt');
+  var h = '<div class="g-row g-head"><div class="g-label" style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.07em">Этап</div><div class="g-track">';
+  for (var m = 0; m < 9; m++){
+    var md = new Date(2026, 8 + m, 1);
+    var left = md < start ? 0 : (md - start) / span * 100;
+    h += '<span class="g-month" style="left:' + left.toFixed(2) + '%">' + months[m] + (m===4?' 2027':'') + '</span>';
+  }
+  h += '</div></div>';
+  rows.forEach(function(r){
+    var cls = 'g-row' + (r.kind==='group' ? ' g-group' : '');
+    h += '<div class="' + cls + '"><div class="g-label"><span class="c">' + (r.g || r.c) + '</span>' + r.t + '</div><div class="g-track">';
+    if (r.ms){
+      h += '<span class="g-ms" style="left:' + pct(D(r.ms)) + '" title="' + r.ms + '"></span>';
+    } else {
+      var s = D(r.s), e = D(r.e); e.setDate(e.getDate()+1);
+      var w = ((e - s) / span * 100).toFixed(2) + '%';
+      h += '<span class="g-bar' + (r.plan ? ' plan' : '') + '" style="left:' + pct(s) + ';width:' + w + '" title="' + r.s + ' – ' + r.e + '"></span>';
+    }
+    h += '</div></div>';
+  });
+  h += '<div class="g-grid">';
+  for (var k = 1; k < 9; k++){
+    var d2 = new Date(2026, 8 + k, 1);
+    h += '<span style="left:' + ((d2 - start)/span*100).toFixed(2) + '%"></span>';
+  }
+  h += '<span class="g-today" style="left:' + pct(today) + '"><em>сегодня</em></span></div>';
+  el.innerHTML = h;
+})();
+</script>
