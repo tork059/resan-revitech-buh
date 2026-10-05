@@ -183,11 +183,11 @@ html{scroll-behavior:smooth}
       <h1>Автоматизация бухгалтерского учёта в 1С</h1>
       <p class="lead">Проект убирает ручные операции бухгалтерии, устраняет нарушения в первичных документах и приводит обмен между торговой и бухгалтерской базами к автоматическому и контролируемому процессу. Работа идёт по одному направлению за раз: обследование, план, внедрение, затем следующее направление.</p>
       <dl class="passport">
-        <div><dt>Инвестор</dt><dd>ООтестО «Ревитех»</dd></div>
+        <div><dt>Инвестор</dt><dd>ООО «Ревитех»</dd></div>
         <div><dt>Ключевой пользователь</dt><dd>Главный бухгалтер</dd></div>
         <div><dt>Период</dt><dd>09.2026 – 05.2027</dd></div>
         <div><dt>Текущее направление</dt><dd>Обмен УТ → БП</dd></div>
-        <div><dt>Руководитель проекта</dt><dd>уточняется</dd></div>
+        <div><dt>Руководитель проекта</dt><dd>Головин А.Н.</dd></div>
         <div><dt>Администратор 1С</dt><dd>уточняется</dd></div>
         <div><dt>Разработчик обмена</dt><dd>Иннотех (подрядчик)</dd></div>
         <div><dt>Следующий шаг</dt><dd>Тест «Почему канцтовары не уходят в БП»</dd></div>
@@ -565,4 +565,5 @@ function disable(){if(dirty&&!confirm("Есть несохранённые из�
 async function login(){const v=$("editorToken").value.trim();if(!v)return;token=v;const r=await api("/repos/"+R);if(!(r.ok&&r.body.permissions?.push)){token=null;$("editorError").textContent="Токен не принят или нет права записи";$("editorError").hidden=false;return}const f=await api("/repos/"+R+"/contents/"+F+"?ref="+B);if(!f.ok){token=null;$("editorError").textContent="Нет доступа к index.html";$("editorError").hidden=false;return}sha=f.body.sha;try{sessionStorage.setItem(K,token)}catch(e){}modal(false);enable()}
 async function save(){if(!token||!editing||!dirty)return;const msg=prompt("Сообщение Git-коммита","Правка дашборда");if(msg===null)return;const f=await api("/repos/"+R+"/contents/"+F+"?ref="+B);if(!f.ok)throw Error("Не удалось получить текущий файл");if(sha&&f.body.sha!==sha)throw Error("Файл уже изменился в GitHub. Обновите страницу.");const p=new DOMParser().parseFromString(decode(f.body.content),"text/html");let bad=[];Z.forEach(q=>{const a=document.querySelectorAll(q),b=p.querySelectorAll(q);if(a.length!==b.length){bad.push(q);return}for(let i=0;i<a.length;i++)b[i].innerHTML=clean(a[i]).innerHTML});if(bad.length)throw Error("Структура страницы изменилась: "+bad.join(", "));const out="<!doctype html>\n"+p.documentElement.outerHTML+"\n";const u=await api("/repos/"+R+"/contents/"+F,{method:"PUT",headers:{"Content-Type":"application/json"},body:JSON.stringify({message:msg.trim()||"Правка дашборда",content:encode(out),sha:f.body.sha,branch:B})});if(!u.ok)throw Error(u.body.message||"GitHub отклонил сохранение");sha=u.body.content?.sha||null;dirty=false;state();alert("Изменения сохранены в GitHub.")}
 $("editorLoginBtn").onclick=()=>token?(editing?disable():enable()):modal(true);$("editorSaveBtn").onclick=save;$("editorExitBtn").onclick=disable;$("editorCancelBtn").onclick=()=>modal(false);$("editorLoginConfirmBtn").onclick=login;$("editorToken").onkeydown=e=>{if(e.key==="Enter")login()};document.addEventListener("input",()=>{if(editing){dirty=true;state()}},true);try{token=sessionStorage.getItem(K)}catch(e){}state()})();
-</script>\n</body></html>
+</script>\n
+</body></html>
