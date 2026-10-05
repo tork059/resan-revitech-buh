@@ -154,8 +154,8 @@ html{scroll-behavior:smooth}
       <span>Обновлено <b id="docUpd">02.10.2026</b></span>
       <span>Статус: <b>Обследование</b></span>
       <button id="editorLoginBtn" type="button" style="margin-left:8px;padding:6px 12px;border:1px solid rgba(255,255,255,.6);border-radius:6px;background:rgba(255,255,255,.12);color:#fff;font:600 13px inherit;cursor:pointer">Вход</button>
-      <button id="editorSaveBtn" type="button" hidden style="margin-left:4px;padding:6px 12px;border:1px solid #fff;border-radius:6px;background:#fff;color:#315f60;font:600 13px inherit;cursor:pointer">Сохранить</button>
-      <button id="editorExitBtn" type="button" hidden style="margin-left:4px;padding:6px 12px;border:1px solid rgba(255,255,255,.6);border-radius:6px;background:rgba(255,255,255,.12);color:#fff;font:600 13px inherit;cursor:pointer">Выйти</button>
+      <button id="editorSaveBtn" type="button" hidden="" style="margin-left:4px;padding:6px 12px;border:1px solid #fff;border-radius:6px;background:#fff;color:#315f60;font:600 13px inherit;cursor:pointer">Сохранить</button>
+      <button id="editorExitBtn" type="button" hidden="" style="margin-left:4px;padding:6px 12px;border:1px solid rgba(255,255,255,.6);border-radius:6px;background:rgba(255,255,255,.12);color:#fff;font:600 13px inherit;cursor:pointer">Выйти</button>
     </div>
   </div>
 </div>
@@ -183,7 +183,7 @@ html{scroll-behavior:smooth}
       <h1>Автоматизация бухгалтерского учёта в 1С</h1>
       <p class="lead">Проект убирает ручные операции бухгалтерии, устраняет нарушения в первичных документах и приводит обмен между торговой и бухгалтерской базами к автоматическому и контролируемому процессу. Работа идёт по одному направлению за раз: обследование, план, внедрение, затем следующее направление.</p>
       <dl class="passport">
-        <div><dt>Инвестор</dt><dd>ООО «Ревитех»</dd></div>
+        <div><dt>Инвестор</dt><dd>ООтестО «Ревитех»</dd></div>
         <div><dt>Ключевой пользователь</dt><dd>Главный бухгалтер</dd></div>
         <div><dt>Период</dt><dd>09.2026 – 05.2027</dd></div>
         <div><dt>Текущее направление</dt><dd>Обмен УТ → БП</dd></div>
@@ -265,7 +265,7 @@ html{scroll-behavior:smooth}
         <span><span class="pill s-crit">◆</span> веха</span>
         <span><span class="pill s-crit">|</span> сегодня</span>
       </div>
-      <div class="gantt"><div class="g-in" id="gantt"></div></div>
+      <div class="gantt"><div class="g-in" id="gantt"><div class="g-row g-head"><div class="g-label" style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.07em">Этап</div><div class="g-track"><span class="g-month" style="left:0.00%">сен</span><span class="g-month" style="left:3.95%">окт</span><span class="g-month" style="left:16.21%">ноя</span><span class="g-month" style="left:28.06%">дек</span><span class="g-month" style="left:40.32%">янв 2027</span><span class="g-month" style="left:52.57%">фев</span><span class="g-month" style="left:63.64%">мар</span><span class="g-month" style="left:75.89%">апр</span><span class="g-month" style="left:87.75%">май</span></div></div><div class="g-row g-group"><div class="g-label">Обмен УТ → бухгалтерия</div><div class="g-track"><span class="g-bar" style="left:0.40%;width:33.20%" title="22.09.2026 – 14.12.2026"></span></div></div><div class="g-row"><div class="g-label">Обследование</div><div class="g-track"><span class="g-bar" style="left:0.40%;width:4.74%" title="22.09.2026 – 03.10.2026"></span></div></div><div class="g-row"><div class="g-label">Анализ правил</div><div class="g-track"><span class="g-bar" style="left:5.93%;width:4.35%" title="06.10.2026 – 16.10.2026"></span></div></div><div class="g-row"><div class="g-label">Согласование схемы</div><div class="g-track"><span class="g-bar" style="left:11.07%;width:1.98%" title="19.10.2026 – 23.10.2026"></span></div></div><div class="g-row"><div class="g-label">ТЗ и доработка Иннотехом</div><div class="g-track"><span class="g-bar" style="left:13.83%;width:4.74%" title="26.10.2026 – 06.11.2026"></span></div></div><div class="g-row"><div class="g-label">Приёмка на копиях</div><div class="g-track"><span class="g-bar" style="left:19.37%;width:4.74%" title="09.11.2026 – 20.11.2026"></span></div></div><div class="g-row"><div class="g-label">Права и расписание</div><div class="g-track"><span class="g-bar" style="left:24.90%;width:1.98%" title="23.11.2026 – 27.11.2026"></span></div></div><div class="g-row"><div class="g-label">Пилот</div><div class="g-track"><span class="g-bar" style="left:27.67%;width:4.74%" title="30.11.2026 – 11.12.2026"></span></div></div><div class="g-row"><div class="g-label">Ввод в эксплуатацию</div><div class="g-track"><span class="g-ms" style="left:33.20%" title="14.12.2026"></span></div></div><div class="g-row g-group"><div class="g-label">Первичные документы и НДС</div><div class="g-track"><span class="g-bar plan" style="left:33.20%;width:21.34%" title="14.12.2026 – 05.02.2027"></span></div></div><div class="g-row g-group"><div class="g-label">Сверка ОСВ Ресан / Ревитех</div><div class="g-track"><span class="g-bar plan" style="left:55.34%;width:7.51%" title="08.02.2027 – 26.02.2027"></span></div></div><div class="g-row g-group"><div class="g-label">Банк и платежи</div><div class="g-track"><span class="g-bar plan" style="left:63.64%;width:15.81%" title="01.03.2027 – 09.04.2027"></span></div></div><div class="g-row g-group"><div class="g-label">Закрытие периода, акт сверки</div><div class="g-track"><span class="g-bar plan" style="left:80.24%;width:18.58%" title="12.04.2027 – 28.05.2027"></span></div></div><div class="g-grid"><span style="left:3.95%"></span><span style="left:16.21%"></span><span style="left:28.06%"></span><span style="left:40.32%"></span><span style="left:52.57%"></span><span style="left:63.64%"></span><span style="left:75.89%"></span><span style="left:87.75%"></span><span class="g-today" style="left:1.58%"><em>сегодня</em></span></div></div></div>
     </section>
 
     <section id="registry">
@@ -486,7 +486,7 @@ html{scroll-behavior:smooth}
           </tbody>
         </table>
       </div>
-      <footer spellcheck="false">Внутренний документ проекта. Сроки ориентировочные и уточняются по итогам обследования каждого направления.</footer>
+      <footer spellcheck="false" data-editor-zone="1">Внутренний документ проекта. Сроки ориентировочные и уточняются по итогам обследования каждого направления.</footer>
     </section>
   </main>
 </div>
@@ -543,12 +543,12 @@ html{scroll-behavior:smooth}
 })();
 </script>
 
-<div id="editorModal" hidden style="position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.6);align-items:center;justify-content:center;padding:20px">
+<div id="editorModal" hidden="" style="position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.6);align-items:center;justify-content:center;padding:20px">
 <div style="width:min(520px,100%);background:#fff;color:#182222;padding:22px;border-radius:6px;box-shadow:0 15px 60px #0006">
 <h2 style="margin:0 0 10px">Доступ к редактированию</h2>
 <p style="font:14px/1.5 system-ui;margin:0 0 12px">Введите Fine-grained GitHub Token с правом Contents: Read and write для этого репозитория. Токен хранится только до закрытия вкладки.</p>
 <input id="editorToken" type="password" autocomplete="off" placeholder="github_pat_…" style="width:100%;padding:10px;border:1px solid #bbb;border-radius:4px;box-sizing:border-box">
-<p id="editorError" hidden style="color:#b23a2a;font:13px system-ui"></p>
+<p id="editorError" hidden="" style="color:#b23a2a;font:13px system-ui"></p>
 <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:14px"><button id="editorCancelBtn" type="button">Отмена</button><button id="editorLoginConfirmBtn" type="button">Войти</button></div>
 </div></div>
 <script>
@@ -565,4 +565,4 @@ function disable(){if(dirty&&!confirm("Есть несохранённые из�
 async function login(){const v=$("editorToken").value.trim();if(!v)return;token=v;const r=await api("/repos/"+R);if(!(r.ok&&r.body.permissions?.push)){token=null;$("editorError").textContent="Токен не принят или нет права записи";$("editorError").hidden=false;return}const f=await api("/repos/"+R+"/contents/"+F+"?ref="+B);if(!f.ok){token=null;$("editorError").textContent="Нет доступа к index.html";$("editorError").hidden=false;return}sha=f.body.sha;try{sessionStorage.setItem(K,token)}catch(e){}modal(false);enable()}
 async function save(){if(!token||!editing||!dirty)return;const msg=prompt("Сообщение Git-коммита","Правка дашборда");if(msg===null)return;const f=await api("/repos/"+R+"/contents/"+F+"?ref="+B);if(!f.ok)throw Error("Не удалось получить текущий файл");if(sha&&f.body.sha!==sha)throw Error("Файл уже изменился в GitHub. Обновите страницу.");const p=new DOMParser().parseFromString(decode(f.body.content),"text/html");let bad=[];Z.forEach(q=>{const a=document.querySelectorAll(q),b=p.querySelectorAll(q);if(a.length!==b.length){bad.push(q);return}for(let i=0;i<a.length;i++)b[i].innerHTML=clean(a[i]).innerHTML});if(bad.length)throw Error("Структура страницы изменилась: "+bad.join(", "));const out="<!doctype html>\n"+p.documentElement.outerHTML+"\n";const u=await api("/repos/"+R+"/contents/"+F,{method:"PUT",headers:{"Content-Type":"application/json"},body:JSON.stringify({message:msg.trim()||"Правка дашборда",content:encode(out),sha:f.body.sha,branch:B})});if(!u.ok)throw Error(u.body.message||"GitHub отклонил сохранение");sha=u.body.content?.sha||null;dirty=false;state();alert("Изменения сохранены в GitHub.")}
 $("editorLoginBtn").onclick=()=>token?(editing?disable():enable()):modal(true);$("editorSaveBtn").onclick=save;$("editorExitBtn").onclick=disable;$("editorCancelBtn").onclick=()=>modal(false);$("editorLoginConfirmBtn").onclick=login;$("editorToken").onkeydown=e=>{if(e.key==="Enter")login()};document.addEventListener("input",()=>{if(editing){dirty=true;state()}},true);try{token=sessionStorage.getItem(K)}catch(e){}state()})();
-</script></body></html>\n
+</script>\n</body></html>
