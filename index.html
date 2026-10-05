@@ -151,6 +151,9 @@ html{scroll-behavior:smooth}
       <span>Версия <b id="docVer">0.4</b></span>
       <span>Обновлено <b id="docUpd">02.10.2026</b></span>
       <span>Статус: <b>Обследование</b></span>
+      <button id="editorLoginBtn" type="button" style="margin-left:8px;padding:6px 12px;border:1px solid rgba(255,255,255,.6);border-radius:6px;background:rgba(255,255,255,.12);color:#fff;font:600 13px inherit;cursor:pointer">Вход</button>
+      <button id="editorSaveBtn" type="button" hidden style="margin-left:4px;padding:6px 12px;border:1px solid #fff;border-radius:6px;background:#fff;color:#315f60;font:600 13px inherit;cursor:pointer">Сохранить</button>
+      <button id="editorExitBtn" type="button" hidden style="margin-left:4px;padding:6px 12px;border:1px solid rgba(255,255,255,.6);border-radius:6px;background:rgba(255,255,255,.12);color:#fff;font:600 13px inherit;cursor:pointer">Выйти</button>
     </div>
   </div>
 </div>
@@ -537,4 +540,26 @@ html{scroll-behavior:smooth}
   el.innerHTML = h;
 })();
 </script>
-\n</body></html>\n
+\n<div id="editorModal" hidden style="position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.6);align-items:center;justify-content:center;padding:20px">
+<div style="width:min(520px,100%);background:#fff;color:#182222;padding:22px;border-radius:6px;box-shadow:0 15px 60px #0006">
+<h2 style="margin:0 0 10px">Доступ к редактированию</h2>
+<p style="font:14px/1.5 system-ui;margin:0 0 12px">Введите Fine-grained GitHub Token с правом Contents: Read and write для этого репозитория. Токен хранится только до закрытия вкладки.</p>
+<input id="editorToken" type="password" autocomplete="off" placeholder="github_pat_…" style="width:100%;padding:10px;border:1px solid #bbb;border-radius:4px;box-sizing:border-box">
+<p id="editorError" hidden style="color:#b23a2a;font:13px system-ui"></p>
+<div style="display:flex;gap:8px;justify-content:flex-end;margin-top:14px"><button id="editorCancelBtn" type="button">Отмена</button><button id="editorLoginConfirmBtn" type="button">Войти</button></div>
+</div></div>
+<script>
+(()=>{const R="tork059/resan-revitech-buh",F="index.html",B="main",A="https://api.github.com",K="resan.buh.editor.token",Z=["#passport","#streams","#roadmap","#registry","#n1","#questions","#decisions","#risks","#landscape","#changelog","footer"];let token=null,sha=null,editing=false,dirty=false;
+const $=id=>document.getElementById(id);
+function api(path,options={}){options.headers=Object.assign({"Accept":"application/vnd.github+json","X-GitHub-Api-Version":"2022-11-28"},options.headers||{},token?{"Authorization":"Bearer "+token}:{});return fetch(A+path,options).then(async r=>({ok:r.ok,status:r.status,body:await r.json().catch(()=>({}))}))}
+function decode(v){const b=atob(v.replace(/\s/g,""));return new TextDecoder().decode(Uint8Array.from(b,c=>c.charCodeAt(0)))}
+function encode(v){let b="";for(const x of new TextEncoder().encode(v))b+=String.fromCharCode(x);return btoa(b)}
+function state(){$("editorLoginBtn").hidden=!!token&&editing;$("editorSaveBtn").hidden=!token||!editing;$("editorExitBtn").hidden=!token||!editing;$("editorLoginBtn").textContent=token&&!editing?"Редактировать":"Вход";$("editorSaveBtn").disabled=!dirty}
+function modal(on){$("editorModal").hidden=!on;if(on){$("editorModal").style.display="flex";$("editorToken").focus()}else $("editorModal").style.display="none"}
+function clean(n){const c=n.cloneNode(true);c.querySelectorAll("#editorModal,#editorLoginBtn,#editorSaveBtn,#editorExitBtn,.editor-del,.editor-add").forEach(x=>x.remove());c.querySelectorAll("[contenteditable]").forEach(x=>x.removeAttribute("contenteditable"));return c}
+function enable(){editing=true;dirty=false;document.body.classList.add("editor-mode");Z.forEach(q=>document.querySelectorAll(q).forEach(n=>{n.setAttribute("contenteditable","true");n.dataset.editorZone="1"}));state()}
+function disable(){if(dirty&&!confirm("Есть несохранённые изменения. Выйти без сохранения?"))return;editing=false;dirty=false;document.body.classList.remove("editor-mode");document.querySelectorAll("[contenteditable]").forEach(n=>n.removeAttribute("contenteditable"));state()}
+async function login(){const v=$("editorToken").value.trim();if(!v)return;token=v;const r=await api("/repos/"+R);if(!(r.ok&&r.body.permissions?.push)){token=null;$("editorError").textContent="Токен не принят или нет права записи";$("editorError").hidden=false;return}const f=await api("/repos/"+R+"/contents/"+F+"?ref="+B);if(!f.ok){token=null;$("editorError").textContent="Нет доступа к index.html";$("editorError").hidden=false;return}sha=f.body.sha;try{sessionStorage.setItem(K,token)}catch(e){}modal(false);enable()}
+async function save(){if(!token||!editing||!dirty)return;const msg=prompt("Сообщение Git-коммита","Правка дашборда");if(msg===null)return;const f=await api("/repos/"+R+"/contents/"+F+"?ref="+B);if(!f.ok)throw Error("Не удалось получить текущий файл");if(sha&&f.body.sha!==sha)throw Error("Файл уже изменился в GitHub. Обновите страницу.");const p=new DOMParser().parseFromString(decode(f.body.content),"text/html");let bad=[];Z.forEach(q=>{const a=document.querySelectorAll(q),b=p.querySelectorAll(q);if(a.length!==b.length){bad.push(q);return}for(let i=0;i<a.length;i++)b[i].innerHTML=clean(a[i]).innerHTML});if(bad.length)throw Error("Структура страницы изменилась: "+bad.join(", "));const out="<!doctype html>\n"+p.documentElement.outerHTML+"\n";const u=await api("/repos/"+R+"/contents/"+F,{method:"PUT",headers:{"Content-Type":"application/json"},body:JSON.stringify({message:msg.trim()||"Правка дашборда",content:encode(out),sha:f.body.sha,branch:B})});if(!u.ok)throw Error(u.body.message||"GitHub отклонил сохранение");sha=u.body.content?.sha||null;dirty=false;state();alert("Изменения сохранены в GitHub.")}
+$("editorLoginBtn").onclick=()=>token?(editing?disable():enable()):modal(true);$("editorSaveBtn").onclick=save;$("editorExitBtn").onclick=disable;$("editorCancelBtn").onclick=()=>modal(false);$("editorLoginConfirmBtn").onclick=login;$("editorToken").onkeydown=e=>{if(e.key==="Enter")login()};document.addEventListener("input",()=>{if(editing){dirty=true;state()}},true);try{token=sessionStorage.getItem(K)}catch(e){}state()})();
+</script></body></html>\n
