@@ -150,8 +150,8 @@ html{scroll-behavior:smooth}
   <div class="topbar-in">
     <div class="mark"><i></i>РЕВИТЕХ · ПРОЕКТНЫЙ ОФИС</div>
     <div class="meta">
-      <span>Версия <b id="docVer">0.4</b></span>
-      <span>Обновлено <b id="docUpd">02.10.2026</b></span>
+      <span>Версия <b id="docVer">0.5</b></span>
+      <span>Обновлено <b id="docUpd">07.10.2026</b></span>
       <span>Статус: <b>Обследование</b></span>
       <button id="editorLoginBtn" type="button" style="margin-left:8px;padding:6px 12px;border:1px solid rgba(255,255,255,.6);border-radius:6px;background:rgba(255,255,255,.12);color:#fff;font:600 13px inherit;cursor:pointer">Вход</button>
       <button id="editorSaveBtn" type="button" hidden="" style="margin-left:4px;padding:6px 12px;border:1px solid #fff;border-radius:6px;background:#fff;color:#315f60;font:600 13px inherit;cursor:pointer">Сохранить</button>
@@ -169,6 +169,7 @@ html{scroll-behavior:smooth}
       <li><a href="#roadmap">Дорожная карта</a></li>
       <li><a href="#registry">Реестр проблем</a></li>
       <li><a href="#n1">Обмен УТ → БП</a></li>
+      <li><a href="#exchange-audit">Аудит обмена</a></li>
       <li><a href="#questions">Открытые вопросы</a></li>
       <li><a href="#decisions">Журнал решений</a></li>
       <li><a href="#risks">Риски</a></li>
@@ -391,6 +392,36 @@ html{scroll-behavior:smooth}
       </div>
     </section>
 
+
+    <section id="exchange-audit">
+      <div class="sec-head"><h2>Аудит обработки и правил обмена УТ → БП</h2><span class="upd">обновлено 07.10.2026</span></div>
+      <div class="grid2">
+        <div class="panel">
+          <h3>Что проверено</h3>
+          <ul class="clean" style="margin-top:10px">
+            <li>Актуальная внешняя обработка «Выгрузка Монтаж от 01.09.2026.epf» и используемые ею правила «ПравилаОбменаТекст30».</li>
+            <li>Переданный отдельно XML совпадает со встроенным в EPF комплектом правил этой версии обработки.</li>
+            <li>Разобраны уровни логики: форма обработки, правила конвертации, алгоритмы, фильтры, жестко заданные бухгалтерские значения и кастомные зависимости УТ.</li>
+          </ul>
+        </div>
+        <div class="panel">
+          <h3>Ключевой вывод</h3>
+          <p style="margin-top:10px">Обмен существенно зависит от исторически накопленных кастомных правил. В XML определено 86 правил конвертации объектов, в том числе 22 документных правила. При этом 13 правил раздела выбора данных помечены как отключенные, а фактический набор выгружаемых объектов формируется через пользовательские отметки в обработке.</p>
+        </div>
+      </div>
+      <div class="panel">
+        <h3>Что важно для рефакторинга</h3>
+        <ul class="clean" style="margin-top:10px">
+          <li>Зафиксировать реальный профиль двухнедельного запуска: какие правила отмечаются бухгалтером и какие фильтры используются.</li>
+          <li>Отделить действующие бизнес-исключения от устаревшего и закомментированного кода.</li>
+          <li>Убрать из правил жесткие привязки там, где их можно заменить на настройки, и отдельно проверить зависимости от реквизитов ДВК_*, Ресан_* и ит*.</li>
+          <li>Перед изменением механизма обмена сохранить контрольный набор документов и результаты загрузки в БП для сравнения «до / после».</li>
+        </ul>
+        <p style="margin-top:14px"><a href="audit-ut-bp.html" target="_blank" rel="noopener"><b>Открыть полный аудит обработки и правил обмена →</b></a></p>
+        <p style="margin-top:6px;font-size:13px;color:var(--muted)">Полная версия открывается как отдельная страница проекта. Отдельная кнопка скачивания файла не предусмотрена.</p>
+      </div>
+    </section>
+
     <section id="questions">
       <div class="sec-head"><h2>Открытые вопросы</h2><span class="upd">обновлено 02.10.2026</span></div>
       <div class="tbl">
@@ -473,12 +504,13 @@ html{scroll-behavior:smooth}
     </section>
 
     <section id="changelog">
-      <div class="sec-head"><h2>Журнал изменений документа</h2><span class="upd">обновлено 02.10.2026</span></div>
+      <div class="sec-head"><h2>Журнал изменений документа</h2><span class="upd">обновлено 07.10.2026</span></div>
       <p style="font-size:14px;color:var(--muted)">Каждое обновление повышает версию документа и отмечается здесь. У каждого раздела указана дата его последнего изменения.</p>
       <div class="tbl">
         <table>
           <thead><tr><th>Версия</th><th>Дата</th><th>Что изменилось</th></tr></thead>
           <tbody>
+            <tr><td class="id">0.5</td><td class="nw">07.10.2026</td><td>Добавлен отдельный раздел с краткими результатами аудита внешней обработки и правил обмена УТ → БП. В проект размещена полная веб-версия аудита с картой документных правил, зависимостями, рисками и рекомендациями по рефакторингу. Добавлена ссылка на просмотр полного аудита без отдельной кнопки скачивания.</td></tr>
             <tr><td class="id">0.4</td><td class="nw">02.10.2026</td><td>Разобраны файлы обработки и правил обмена, вопрос «Получить у Иннотеха файл правил и обработку» закрыт. Установлено: условия по автору в правилах нет, ставки 22% поддерживаются, номенклатура ищется по коду. По проблемам «Двойной ввод канцтоваров» и «Объекты бухгалтерии не попадают в БП» записана гипотеза о фильтрах подразделения и склада, добавлен тест «Почему канцтовары не уходят в БП». Обновлены задачи «Канцтовары» и «НДС 22%», вопрос «Есть ли исключение объектов бухгалтеров вне правил обмена» и риск «Неверно определена причина двойного ввода»; добавлен риск «Дубли номенклатуры в БП». Этап «Анализ правил» в работе</td></tr>
             <tr><td class="id">0.3</td><td class="nw">28.09.2026</td><td>Закрыты вопросы «Поддержка конфигурации УТ», «Отдельная бухгалтерская база Ревитеха», «Где проводятся канцтовары», «Перечень документов для выгрузки» и «Кто вносит изменения в правила». По проблемам «Двойной ввод канцтоваров» и «Объекты бухгалтерии не попадают в БП» записана причина со слов бухгалтерии (позже пересмотрена). Добавлен объём доработок для ТЗ Иннотеху: «Канцтовары», «НДС 22%», «Запуск по расписанию», «Права»; этапы перестроены под схему «ТЗ → доработка Иннотехом → приёмка». Добавлены решения «Изменения вносит Иннотех по ТЗ проекта» и «Набор правил выгрузки сохраняется», риск снятия исключения без понимания причины, вопросы к Иннотеху и главбуху по канцтоварам. Уточнён ИТ-ландшафт: одна бухгалтерская база на обе организации</td></tr>
             <tr><td class="id">0.2</td><td class="nw">25.09.2026</td><td>Текущая схема обмена описана по актуальной обработке «Выгрузка данных в Монтаж» вместо устаревшей. В роли проекта добавлен Иннотех. Уточнены гипотезы по проблемам «Выгрузка в БП 2 раза в месяц», «Объекты бухгалтерии не попадают в БП» и «Бухгалтеры снимают ограничения выгрузки». Закрыты вопросы «Вкладка правил выгрузки» и «Как бухгалтер заполняет форму выгрузки»; добавлены вопросы о канцтоварах, перечне документов и порядке доработок. Добавлены решение «Анализ по актуальной обработке» и риски «Зависимость от подрядчика» и «Неконтролируемые версии обработки». Этапы уточнены с учётом подрядчика</td></tr>
@@ -552,7 +584,7 @@ html{scroll-behavior:smooth}
 <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:14px"><button id="editorCancelBtn" type="button">Отмена</button><button id="editorLoginConfirmBtn" type="button">Войти</button></div>
 </div></div>
 <script>
-(()=>{const R="tork059/resan-revitech-buh",F="index.html",B="main",A="https://api.github.com",K="resan.buh.editor.token",Z=["#passport","#streams","#roadmap","#registry","#n1","#questions","#decisions","#risks","#landscape","#changelog","footer"];let token=null,sha=null,editing=false,dirty=false;
+(()=>{const R="tork059/resan-revitech-buh",F="index.html",B="main",A="https://api.github.com",K="resan.buh.editor.token",Z=["#passport","#streams","#roadmap","#registry","#n1","#exchange-audit","#questions","#decisions","#risks","#landscape","#changelog","footer"];let token=null,sha=null,editing=false,dirty=false;
 const $=id=>document.getElementById(id);
 function api(path,options={}){options.headers=Object.assign({"Accept":"application/vnd.github+json","X-GitHub-Api-Version":"2022-11-28"},options.headers||{},token?{"Authorization":"Bearer "+token}:{});return fetch(A+path,options).then(async r=>({ok:r.ok,status:r.status,body:await r.json().catch(()=>({}))}))}
 function decode(v){const b=atob(v.replace(/\s/g,""));return new TextDecoder().decode(Uint8Array.from(b,c=>c.charCodeAt(0)))}
